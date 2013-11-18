@@ -1,4 +1,5 @@
 using System;
+using NesCore;
 
 namespace Cli
 {
@@ -6,7 +7,21 @@ namespace Cli
 	{
 		public static void Main (string[] args)
 		{
-			Console.WriteLine ("Hello World!");
+			if (args == null || args.Length < 1 || string.IsNullOrWhiteSpace (args [0])) {
+				Console.WriteLine ("First argument should be path to NES rom.");
+				return;
+			}
+
+			var fileInfo = new System.IO.FileInfo (args [0]);
+			if (!fileInfo.Exists) {
+				Console.WriteLine ("File does not exist: {0}", fileInfo.FullName);
+				return;
+			}
+
+			var rom = new NesRom (fileInfo);
+			var cpu = new CPU ();
+
+			var nesEmulation = new NES (rom, cpu);
 		}
 	}
 }

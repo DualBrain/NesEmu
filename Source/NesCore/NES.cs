@@ -3,13 +3,17 @@ using System.Threading;
 
 namespace NesCore
 {
-	public class Emulator
+	public class NES
 	{
 		private bool _isRunning = false;
 		private readonly Thread _cpu6502Thread;
+		private readonly NesRom _rom;
+		private readonly CPU _cpu;
 
-		public Emulator ()
+		public NES (NesRom rom, CPU cpu)
 		{
+			_cpu = cpu;
+			_rom = rom;
 			_cpu6502Thread = new Thread (Emulate);
 		}
 
@@ -29,7 +33,7 @@ namespace NesCore
 		{
 			while (_isRunning) {
 
-
+				//TODO: delay to simulate slower cpu?
 			}
 		}
 	}

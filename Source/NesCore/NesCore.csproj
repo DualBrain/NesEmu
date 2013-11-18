@@ -6,7 +6,7 @@
     <ProductVersion>12.0.0</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{B55F7624-5968-4612-8F54-FBA8A841B730}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>Library</OutputType>
     <RootNamespace>NesCore</RootNamespace>
     <AssemblyName>NesCore</AssemblyName>
   </PropertyGroup>
@@ -31,4 +31,9 @@
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Compile Include="NES.cs" />
+    <Compile Include="NesRom.cs" />
+    <Compile Include="CPU.cs" />
+  </ItemGroup>
 </Project>
