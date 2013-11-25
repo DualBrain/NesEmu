@@ -35,6 +35,7 @@
     <Compile Include="NES.cs" />
     <Compile Include="NesRom.cs" />
     <Compile Include="CPU.cs" />
+    <Compile Include="Memory.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Data.Linq" />

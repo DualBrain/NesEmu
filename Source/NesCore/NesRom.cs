@@ -6,8 +6,17 @@ namespace NesCore
 {
 	public class NesRom
 	{
-		private NesRom ()
+		private readonly byte[] _bytes;
+
+		public NesRom (byte[] bytes)
 		{
+			_bytes = bytes;
+		}
+
+		public byte[] Bytes {
+			get {
+				return _bytes;
+			}
 		}
 
 		public static NesRom Parse (FileInfo fileInfo)
@@ -15,7 +24,6 @@ namespace NesCore
 			Console.WriteLine ("Parsing {0}", fileInfo.FullName);
 
 			using (var fileStream = fileInfo.OpenRead ()) {
-
 				var isValidNesHeader = true;
 				isValidNesHeader = isValidNesHeader && fileStream.ReadByte () == 0x4E;	//N
 				isValidNesHeader = isValidNesHeader && fileStream.ReadByte () == 0x45;	//E
@@ -37,7 +45,7 @@ namespace NesCore
 
 				for (var i = 0; i < prgBlockCount; ++i) {
 					prgBlocks [i] = new byte[16384];
-					fileStream.Read (prgBlocks [i], 0, 16384);
+					fileStream.Read (prgBlocks [i], 0, 0x4000);
 				}
 
 				for (var i = 0; i < chrBlockCount; ++i) {
@@ -45,7 +53,16 @@ namespace NesCore
 					fileStream.Read (chrBlocks [i], 0, 8192);
 				}
 
-				return new NesRom ();
+				//There may be a remaining 128 bytes of Title data. Not necessary to read.
+
+				var sizeInBytesOfRomData = (prgBlockCount * 16384) + (chrBlockCount * 8192);
+				fileStream.Position = 16;
+				var romBytes = new byte[sizeInBytesOfRomData];
+				var bytesRead = fileStream.Read (romBytes, 0, sizeInBytesOfRomData);
+				if (bytesRead != sizeInBytesOfRomData)
+					throw new FileLoadException ("", fileInfo.Name);
+
+				return new NesRom (romBytes);
 			}
 		}
 	}

@@ -7,14 +7,21 @@ namespace NesCore
 	{
 		private bool _isRunning = false;
 		private readonly Thread _cpu6502Thread;
-		private readonly NesRom _rom;
+		private NesRom _rom;
 		private readonly CPU _cpu;
+		private readonly Memory _memory;
 
-		public NES (NesRom rom, CPU cpu)
+		public NES (CPU cpu, Memory memory)
 		{
+			_memory = memory;
 			_cpu = cpu;
-			_rom = rom;
 			_cpu6502Thread = new Thread (Emulate);
+		}
+
+		public void LoadRom (NesRom rom)
+		{
+			_rom = rom;
+			_memory.LoadRom (_rom.Bytes);
 		}
 
 		public void BeginEmulation ()
@@ -33,7 +40,7 @@ namespace NesCore
 		{
 			while (_isRunning) {
 
-				//TODO: delay to simulate slower cpu?
+				_cpu.OneCpuCycle ();
 			}
 		}
 	}
