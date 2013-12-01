@@ -19,7 +19,7 @@ namespace Cli
 			}
 
 			var rom = NesRom.Parse (fileInfo);
-			var memory = new Memory (0xFFFF);
+			var memory = new Memory (0x10000);
 			var cpu = new CPU (memory);
 
 			var nesEmulation = new NES (cpu, memory);

@@ -21,7 +21,7 @@ namespace NesCore
 		public void LoadRom (NesRom rom)
 		{
 			_rom = rom;
-			_memory.LoadRom (_rom.Bytes);
+			_memory.LoadRom (_rom);
 		}
 
 		public void BeginEmulation ()

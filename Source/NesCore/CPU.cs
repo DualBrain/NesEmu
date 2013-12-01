@@ -14,8 +14,9 @@ namespace NesCore
 
 		public void OneCpuCycle ()
 		{
-			var bytes = _memory.ReadTwoBytes ();
-
+			var address = _memory.ReadUInt16 (_executionPointer);
+			Byte opCode = _memory.ReadByte (address);
+			Console.WriteLine (opCode);
 		}
 	}
 }

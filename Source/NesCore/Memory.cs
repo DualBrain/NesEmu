@@ -23,17 +23,25 @@ namespace NesCore
 			}
 		}
 
-		public void LoadRom (byte[] bytes)
+		public void LoadRom (NesRom rom)
 		{
-			Buffer.BlockCopy (bytes, 0, _bytes, ROMOFFSET, bytes.Length);
+			rom.CopyPRGBytesTo (_bytes, ROMOFFSET);
 		}
 
-		public byte[] ReadTwoBytes ()
+		public UInt16 ReadUInt16 (int fromAddress)
 		{
-			//TODO: change to ReadInt32. 6502 is little ending, don't forget to swap bytes!
-			byte[] bytesRead = new byte[2];
-			Buffer.BlockCopy (_bytes, _position, bytesRead, 0, 2);
-			return bytesRead;
+			_position += 2;
+
+			var lowByte = (int)_bytes [fromAddress];
+			var highByte = (int)_bytes [fromAddress + 1];
+			var aNumber = (UInt16)((highByte << 8) | lowByte);
+
+			return aNumber;
+		}
+
+		public byte ReadByte (int fromAddress)
+		{
+			return _bytes [fromAddress];
 		}
 	}
 }
