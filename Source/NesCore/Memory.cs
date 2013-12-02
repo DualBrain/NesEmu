@@ -31,9 +31,17 @@ namespace NesCore
 			return _bytes [fromAddress];
 		}
 
-		public void WriteByteToAddress (byte byteToWrite, int addressToStoreAccumulator)
+		public void WriteByteToAddress (byte byteToWrite, int addressToWrite)
 		{
-			_bytes [addressToStoreAccumulator] = byteToWrite;
+			_bytes [addressToWrite] = byteToWrite;
+		}
+
+		public void WriteUInt16ToAddress (UInt16 valueToWrite, int addressToWrite)
+		{
+			var lowByte = (byte)valueToWrite;
+			var highByte = (byte)(valueToWrite >> 8);
+			_bytes [addressToWrite] = lowByte;
+			_bytes [addressToWrite + 1] = highByte;
 		}
 	}
 }
