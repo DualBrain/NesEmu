@@ -28,7 +28,18 @@ namespace NesCore
 
 		public byte ReadByte (int fromAddress)
 		{
-			return _bytes [fromAddress];
+			var byteRead = _bytes [fromAddress];
+
+			if (fromAddress == 0x2002) {
+				//reading PPU status causes high bit to clear
+				//http://wiki.nesdev.com/w/index.php/PPU_registers#Status_.28.242002.29_.3C_read
+				int ppuRegister = byteRead;
+				const int mask = 1 << 7;
+				ppuRegister &= ~mask;
+				_bytes [fromAddress] = (byte)ppuRegister;
+			}
+
+			return byteRead;
 		}
 
 		public void WriteByteToAddress (byte byteToWrite, int addressToWrite)
@@ -42,6 +53,11 @@ namespace NesCore
 			var highByte = (byte)(valueToWrite >> 8);
 			_bytes [addressToWrite] = lowByte;
 			_bytes [addressToWrite + 1] = highByte;
+		}
+
+		public void SetByteAtAddress (int addressToWrite, byte byteToWrite)
+		{
+			_bytes [addressToWrite] = byteToWrite;
 		}
 	}
 }

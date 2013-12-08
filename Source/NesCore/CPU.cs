@@ -9,6 +9,7 @@ namespace NesCore
 		private UInt16 _stackPointer;
 		private byte _accumulator;
 		private byte _registerX;
+		private bool _cpuFlagN = false;
 		private readonly Memory _memory;
 		private bool _cpuFlagSEI = false;
 		private bool _cpuFlagCLD = false;
@@ -32,6 +33,8 @@ namespace NesCore
 			_programCounter++;
 
 			// opcodes and  http://6502.org/tutorials/6502opcodes.html#SEI
+			Console.WriteLine (string.Format ("OpCode: {0:X2}", opCode));
+
 			switch (opCode) {
 			case 0x78:	//SEI SEt Interrupt
 				_cpuFlagSEI = true;
@@ -41,6 +44,7 @@ namespace NesCore
 				break;
 			case 0xA9:	//LDA LoaD Accumulator Immediate
 				_accumulator = _memory.ReadByte (_programCounter);
+				_cpuFlagN = (_accumulator & (1 << 7)) != 0;
 				_programCounter++;
 				break;
 			case 0x8D:	//STA STore Accumulator
@@ -59,9 +63,12 @@ namespace NesCore
 				address = _memory.ReadUInt16 (_programCounter);
 				_programCounter += 2;
 				_accumulator = _memory.ReadByte (address);
+				_cpuFlagN = (_accumulator & (1 << 7)) != 0;
 				break;
 			case 0x10:	//BPL Branch on result PLus
-				//TODO: Pick up here...
+				var bplByte = _memory.ReadByte (_programCounter);
+				var bplJumpNumberOfBytes = (sbyte)bplByte;
+				_programCounter = (UInt16)(_programCounter + bplJumpNumberOfBytes);
 				break;
 			case 0x20:	//JSR Jump to SubRoutine
 				_stackPointer--;

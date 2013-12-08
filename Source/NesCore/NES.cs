@@ -18,6 +18,11 @@ namespace NesCore
 			_cpu6502Thread = new Thread (Emulate);
 		}
 
+		public void Reset ()
+		{
+			_memory.SetByteAtAddress (0x2002, 0x80);	//HACK: Until there's a PPU, force this value.
+		}
+
 		public void LoadRom (NesRom rom)
 		{
 			_rom = rom;
