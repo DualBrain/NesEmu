@@ -36,6 +36,7 @@
     <Compile Include="NesRom.cs" />
     <Compile Include="CPU.cs" />
     <Compile Include="Memory.cs" />
+    <Compile Include="OpCodes.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Data.Linq" />

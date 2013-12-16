@@ -20,6 +20,16 @@ namespace NesCore
 			_memory = memory;
 		}
 
+		private byte Accumulator {
+			get {
+				return _accumulator;
+			}
+			set {
+				_accumulator = value;
+				_cpuFlagN = (value & (1 << 7)) == 0;
+			}
+		}
+
 		public void OneCpuCycle ()
 		{
 			UInt16 address;
@@ -29,52 +39,67 @@ namespace NesCore
 				_programCounter = _memory.ReadUInt16 (InitialExecutionAddress);
 			}
 
-			Byte opCode = _memory.ReadByte (_programCounter);
-			_programCounter++;
+			var opCodeByte = _memory.ReadByte (_programCounter);
+			var opCode = (OpCodes)opCodeByte;
 
 			// opcodes and  http://6502.org/tutorials/6502opcodes.html#SEI
-			Console.WriteLine (string.Format ("OpCode: {0:X2}", opCode));
+			Console.WriteLine (string.Format ("OpCode: {0}", opCode));
 
 			switch (opCode) {
-			case 0x78:	//SEI SEt Interrupt
+			case OpCodes.SEI:
 				_cpuFlagSEI = true;
-				break;
-			case 0xD8:	//CLD CLear Decimal
-				_cpuFlagCLD = true;
-				break;
-			case 0xA9:	//LDA LoaD Accumulator Immediate
-				_accumulator = _memory.ReadByte (_programCounter);
-				_cpuFlagN = (_accumulator & (1 << 7)) != 0;
 				_programCounter++;
 				break;
-			case 0x8D:	//STA STore Accumulator
-				address = _memory.ReadUInt16 (_programCounter);
+
+			case OpCodes.CLD:
+				_cpuFlagCLD = true;
+				_programCounter++;
+				break;
+
+			case OpCodes.LDA_Immediate:
+				Accumulator = _memory.ReadByte (_programCounter + 1);
 				_programCounter += 2;
+				break;
+
+			case OpCodes.STA:
+				address = _memory.ReadUInt16 (_programCounter + 1);
+				_programCounter += 3;
 				_memory.WriteByteToAddress (_accumulator, address);
 				break;
-			case 0xA2:	//LDX LoaD X register
-				_registerX = _memory.ReadByte (_programCounter);
+
+			case OpCodes.LDX:
+				_registerX = _memory.ReadByte (_programCounter + 1);
+				_programCounter += 2;
+				break;
+
+			case OpCodes.TXS:
+				_stackPointer = _registerX;
 				_programCounter++;
 				break;
-			case 0x9A:	//TXS Transfer X to Stack pointer
-				_stackPointer = _registerX;
+
+			case OpCodes.LDA_Absolute:
+				address = _memory.ReadUInt16 (_programCounter + 1);
+				_programCounter += 3;
+				Accumulator = _memory.ReadByte (address);
 				break;
-			case 0xAD:	//LDA LoaD Accumulator Absolute
-				address = _memory.ReadUInt16 (_programCounter);
-				_programCounter += 2;
-				_accumulator = _memory.ReadByte (address);
-				_cpuFlagN = (_accumulator & (1 << 7)) != 0;
+
+			case OpCodes.BPL:
+				if (_cpuFlagN) {
+					var bplByte = _memory.ReadByte (_programCounter + 1);
+					var bplJumpNumberOfBytes = (bplByte < 128) ? bplByte : 255 - bplByte;	//2's complement conversion
+					_programCounter =
+						(UInt16)(_programCounter + bplJumpNumberOfBytes);
+				} else {
+					_programCounter += 2;
+				}
 				break;
-			case 0x10:	//BPL Branch on result PLus
-				var bplByte = _memory.ReadByte (_programCounter);
-				var bplJumpNumberOfBytes = (sbyte)bplByte;
-				_programCounter = (UInt16)(_programCounter + bplJumpNumberOfBytes);
-				break;
-			case 0x20:	//JSR Jump to SubRoutine
+
+			case OpCodes.JSR:
 				_stackPointer--;
-				_memory.WriteUInt16ToAddress ((UInt16)(_programCounter + 3), _stackPointer);
-				_programCounter = _memory.ReadUInt16 (_programCounter);
+				_memory.WriteUInt16ToAddress ((UInt16)(_programCounter + 4), _stackPointer);
+				_programCounter = _memory.ReadUInt16 (_programCounter + 1);
 				break;
+
 			default:
 				throw new NotImplementedException (string.Format ("OpCode not implemented: {0:X2}", opCode));
 			}
