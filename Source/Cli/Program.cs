@@ -24,8 +24,8 @@ namespace Cli
 
 			var nesEmulation = new NES (cpu, memory);
 
-			nesEmulation.Reset ();
 			nesEmulation.LoadRom (rom);
+			nesEmulation.Reset ();
 
 			nesEmulation.BeginEmulation ();
 

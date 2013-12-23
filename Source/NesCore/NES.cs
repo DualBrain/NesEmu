@@ -21,6 +21,7 @@ namespace NesCore
 		public void Reset ()
 		{
 			_memory.SetByteAtAddress (0x2002, 0x80);	//HACK: Until there's a PPU, force this value.
+			_cpu.Reset ();
 		}
 
 		public void LoadRom (NesRom rom)

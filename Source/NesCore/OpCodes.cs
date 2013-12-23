@@ -15,7 +15,7 @@ namespace NesCore
 		/// <summary>
 		/// LoaD Accumulator Immediate
 		/// </summary>
-		LDA_Immediate = 0xA9,
+		LDA_I = 0xA9,
 		/// <summary>
 		/// STore Accumulator
 		/// </summary>
@@ -31,7 +31,7 @@ namespace NesCore
 		/// <summary>
 		/// LoaD Accumulator Absolute
 		/// </summary>
-		LDA_Absolute = 0xAD,
+		LDA_A = 0xAD,
 		/// <summary>
 		/// Branch on result PLus
 		/// </summary>
